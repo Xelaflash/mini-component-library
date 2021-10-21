@@ -19,12 +19,14 @@ const Select = ({ label, value, onChange, children }) => {
       color: ${COLORS.black};
     }
     label {
-      border:1px solid red;
+      border: 1px solid red;
     }
   `;
 
-
   const displayedValue = getDisplayedValue(value, children);
+
+  // !! For this one i miss the select adapting to option text width && the chevron icon.
+  // you can remove the default chevron by setting appearance: none;
 
   return (
     <>

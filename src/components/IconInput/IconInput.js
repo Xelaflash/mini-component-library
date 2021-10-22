@@ -10,61 +10,88 @@ const IconInput = ({
   icon,
   width = 250,
   size,
-  placeholder,
+  ...delegated
 }) => {
-
+// 1. we define an object of size
   const SIZES = {
     small: {
-      "--font-size": 16 + "px",
-      "--borderSize": 1 + "px",
+      fontSize: 16,
+      borderSize: 1,
+      iconSize: 16,
+      height: 24,
     },
 
     large: {
-      "--font-size": 18 + "px",
-      "--borderSize": 2 + "px",
+      fontSize: 18,
+      borderSize: 2,
+      iconSize: 24,
+      height: 36,
     },
   };
 
-  const InputWrapper = styled.div`
-    /* display: flex; */
-    border: 1px solid red;
-    font-size: var(--font-size);
-    font-weight: 700;
-    border-bottom: var(--borderSize) solid ${COLORS.black};
+  const InputWrapper = styled.label`
+    position: relative;
+    display: block;
     color: ${COLORS.gray700};
     &:hover {
       color: ${COLORS.black};
     }
-  `;
+    `;
 
 
   const InputStyles = styled.input`
+    /* 2. We set css values to a css var */
+    font-size: var(--font-size);
+    height: var(--height);
+    width: var(--width);
     border: none;
-    border: 1px solid green;
-    width: ${(props) => props.width + "px"};
+    /*  we use the same var as height because it should be the same number */
+    padding-left: var(--height);
+    border-bottom: var(--border-thickness) solid ${COLORS.black};
+    font-weight: 700;
+    outline-offset: 2px;
+    color: inherit;
+
     &::placeholder {
       font-weight: 400;
       color: ${COLORS.gray500};
       font-size: 14px;
     }
   `;
+
+  const IconWrapper = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    margin: auto 0;
+    height: var(--size);
+  `;
+  // here we say get SIZES object with key size coming from prop (here either small or large)
   const styles = SIZES[size];
 
-  // !! icon not inline and therefore leads to issue with sizing all the rest is good
+  if (!styles) {
+    throw new Error(`Styles not provided`)
+  }
 
   return (
     <>
       <InputWrapper>
-        <label>
-          <VisuallyHidden>{label}</VisuallyHidden>
-          <Icon id={icon} />
-          <InputStyles
-            type="text"
-            placeholder={placeholder}
-            style={styles}
-            width={width}
-          />
-        </label>
+        <VisuallyHidden>{label}</VisuallyHidden>
+        <IconWrapper style={{ "--size": styles.iconSize + "px" }}>
+          <Icon id={icon} size={styles.iconSize} />
+        </IconWrapper>
+        <InputStyles
+          type="text"
+          {...delegated}
+          // 3. We initialize the css var as inline style
+          style={{
+            "--width": width + "px",
+            "--height": styles.height / 16 + "rem",
+            "--border-thickness": styles.borderSize + "px",
+            "--font-size": styles.fontSize / 16 + "rem",
+          }}
+        />
       </InputWrapper>
     </>
   );
